@@ -78,6 +78,31 @@ select {
   padding: 24px;
 }
 
+.search-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  border-radius: 999px;
+  border: 1px solid #333;
+  background: #111;
+  color: #fff;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: #e50914;
+  border-color: #e50914;
+}
+
 .search-panel input,
 .admin-form input,
 .admin-form textarea,

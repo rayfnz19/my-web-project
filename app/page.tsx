@@ -29,25 +29,30 @@ export default function Home() {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [query, setQuery] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   useEffect(() => {
     let isActive = true;
 
     const loadData = async () => {
-      const [moviesResponse, favoritesResponse, historyResponse] = await Promise.all([
+      const [moviesResponse, favoritesResponse, historyResponse, categoriesResponse] = await Promise.all([
         fetch("http://localhost:4000/api/movies"),
         fetch("http://localhost:4000/api/favorites"),
         fetch("http://localhost:4000/api/history"),
+        fetch("http://localhost:4000/api/categories"),
       ]);
 
       const movieData = (await moviesResponse.json()) as Movie[];
       const favoriteData = (await favoritesResponse.json()) as { favorites: number[] };
       const historyData = (await historyResponse.json()) as { history: HistoryItem[] };
+      const categoriesData = (await categoriesResponse.json()) as string[];
 
       if (isActive) {
         setMovies(movieData);
         setFavorites(favoriteData.favorites);
         setHistory(historyData.history);
+        setCategories(categoriesData);
       }
     };
 
@@ -60,14 +65,16 @@ export default function Home() {
 
   const filteredMovies = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return movies;
 
     return movies.filter((movie) => {
-      return [movie.title, movie.description, movie.category].some((value) =>
+      const matchesCategory = selectedCategory === "All" || movie.category === selectedCategory;
+      const matchesQuery = !term || [movie.title, movie.description, movie.category].some((value) =>
         value.toLowerCase().includes(term)
       );
+
+      return matchesCategory && matchesQuery;
     });
-  }, [movies, query]);
+  }, [movies, query, selectedCategory]);
 
   const featuredMovie = movies.find((movie) => movie.featured) || movies[0];
 
@@ -102,6 +109,18 @@ export default function Home() {
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Cari film, genre, atau deskripsi"
         />
+        <div className="category-chips">
+          <button className={selectedCategory === "All" ? "chip active" : "chip"} onClick={() => setSelectedCategory("All")}>All</button>
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={selectedCategory === category ? "chip active" : "chip"}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="content-column">

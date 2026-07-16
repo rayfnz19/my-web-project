@@ -48,6 +48,8 @@ export default function AdminPage() {
   const [form, setForm] = useState<MovieForm>(emptyForm);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [message, setMessage] = useState("");
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const fetchMovies = async () => {
     const response = await fetch("http://localhost:4000/api/movies");
@@ -91,7 +93,15 @@ export default function AdminPage() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>, key: "poster" | "video") => {
     const file = event.target.files?.[0];
     if (!file) return;
-    setForm((current) => ({ ...current, [key]: file.name }));
+
+    if (key === "poster") {
+      setPosterFile(file);
+      setForm((current) => ({ ...current, poster: file.name }));
+      return;
+    }
+
+    setVideoFile(file);
+    setForm((current) => ({ ...current, video: file.name }));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -106,6 +116,14 @@ export default function AdminPage() {
       if (value) formData.append(key, value);
     });
 
+    if (posterFile) {
+      formData.append("poster", posterFile);
+    }
+
+    if (videoFile) {
+      formData.append("video", videoFile);
+    }
+
     const endpoint = editingId ? `http://localhost:4000/api/movies/${editingId}` : "http://localhost:4000/api/movies";
     const method = editingId ? "PUT" : "POST";
 
@@ -117,6 +135,8 @@ export default function AdminPage() {
     const data = await response.json();
     setMessage(editingId ? `Film berhasil diubah: ${data.title}` : `Film berhasil ditambahkan: ${data.title}`);
     setEditingId(null);
+    setPosterFile(null);
+    setVideoFile(null);
     setForm(emptyForm);
     fetchMovies();
   };
@@ -187,6 +207,8 @@ export default function AdminPage() {
                 type="button"
                 onClick={() => {
                   setEditingId(null);
+                  setPosterFile(null);
+                  setVideoFile(null);
                   setForm(emptyForm);
                   setMessage("Mode edit dibatalkan.");
                 }}
