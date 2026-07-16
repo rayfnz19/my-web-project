@@ -21,6 +21,8 @@ interface WatchHistoryItem {
   progress: number;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 export default function MovieDetailPage() {
   const params = useParams<{ id: string }>();
   const [movie, setMovie] = useState<MovieDetail | null>(null);
@@ -31,7 +33,7 @@ export default function MovieDetailPage() {
     let isActive = true;
 
     const fetchMovie = async () => {
-      const response = await fetch(`http://localhost:4000/api/movies/${params.id}`);
+      const response = await fetch(`${API_BASE}/api/movies/${params.id}`);
       const data = (await response.json()) as MovieDetail;
       if (isActive) {
         setMovie(data);
@@ -39,7 +41,7 @@ export default function MovieDetailPage() {
     };
 
     const fetchHistory = async () => {
-      const response = await fetch("http://localhost:4000/api/history");
+      const response = await fetch(`${API_BASE}/api/history`);
       const data = (await response.json()) as { history: WatchHistoryItem[] };
       if (isActive) {
         setHistory(data.history);
@@ -59,7 +61,7 @@ export default function MovieDetailPage() {
     const percent = Math.round((video.currentTime / video.duration) * 100);
     setProgress(percent);
 
-    await fetch("http://localhost:4000/api/history", {
+    await fetch(`${API_BASE}/api/history`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

@@ -24,6 +24,8 @@ interface HistoryItem {
   progress: number;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 export default function Home() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -37,10 +39,10 @@ export default function Home() {
 
     const loadData = async () => {
       const [moviesResponse, favoritesResponse, historyResponse, categoriesResponse] = await Promise.all([
-        fetch("http://localhost:4000/api/movies"),
-        fetch("http://localhost:4000/api/favorites"),
-        fetch("http://localhost:4000/api/history"),
-        fetch("http://localhost:4000/api/categories"),
+        fetch(`${API_BASE}/api/movies`),
+        fetch(`${API_BASE}/api/favorites`),
+        fetch(`${API_BASE}/api/history`),
+        fetch(`${API_BASE}/api/categories`),
       ]);
 
       const movieData = (await moviesResponse.json()) as Movie[];
@@ -79,7 +81,7 @@ export default function Home() {
   const featuredMovie = movies.find((movie) => movie.featured) || movies[0];
 
   const toggleFavorite = async (movieId: number) => {
-    const response = await fetch("http://localhost:4000/api/favorites", {
+    const response = await fetch(`${API_BASE}/api/favorites`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ movieId }),

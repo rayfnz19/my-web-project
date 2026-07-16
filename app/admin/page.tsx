@@ -16,6 +16,8 @@ interface MovieItem {
   subtitle: string;
 }
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 interface MovieForm {
   id?: number;
   title: string;
@@ -52,7 +54,7 @@ export default function AdminPage() {
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const fetchMovies = async () => {
-    const response = await fetch("http://localhost:4000/api/movies");
+    const response = await fetch(`${API_BASE}/api/movies`);
     const data = await response.json();
     setMovies(data as MovieItem[]);
   };
@@ -62,7 +64,7 @@ export default function AdminPage() {
 
     const loadMovies = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/movies");
+        const response = await fetch(`${API_BASE}/api/movies`);
         const data = (await response.json()) as MovieItem[];
         if (isActive) {
           setMovies(data);
@@ -124,7 +126,7 @@ export default function AdminPage() {
       formData.append("video", videoFile);
     }
 
-    const endpoint = editingId ? `http://localhost:4000/api/movies/${editingId}` : "http://localhost:4000/api/movies";
+    const endpoint = editingId ? `${API_BASE}/api/movies/${editingId}` : `${API_BASE}/api/movies`;
     const method = editingId ? "PUT" : "POST";
 
     const response = await fetch(endpoint, {
@@ -160,7 +162,7 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (id: number) => {
-    await fetch(`http://localhost:4000/api/movies/${id}`, { method: "DELETE" });
+    await fetch(`${API_BASE}/api/movies/${id}`, { method: "DELETE" });
     setMessage("Film berhasil dihapus.");
     fetchMovies();
   };
