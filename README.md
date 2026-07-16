@@ -33,6 +33,7 @@ Aplikasi demo streaming film berbasis Next.js untuk frontend dan Node.js untuk b
 
 - Username: `admin`
 - Password: `admin123`
+- Setelah login, token JWT akan disimpan di browser untuk admin CRUD.
 
 ## Menjalankan Project
 

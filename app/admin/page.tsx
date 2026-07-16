@@ -53,6 +53,11 @@ export default function AdminPage() {
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
 
+  const getAuthHeaders = (): HeadersInit => {
+    const token = localStorage.getItem("mini-netflix-token");
+    return token ? { Authorization: `Bearer ${token}` } : { Authorization: "" };
+  };
+
   const fetchMovies = async () => {
     const response = await fetch(`${API_BASE}/api/movies`);
     const data = await response.json();
@@ -131,6 +136,7 @@ export default function AdminPage() {
 
     const response = await fetch(endpoint, {
       method,
+      headers: getAuthHeaders(),
       body: formData,
     });
 
@@ -162,7 +168,10 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (id: number) => {
-    await fetch(`${API_BASE}/api/movies/${id}`, { method: "DELETE" });
+    await fetch(`${API_BASE}/api/movies/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+    });
     setMessage("Film berhasil dihapus.");
     fetchMovies();
   };
